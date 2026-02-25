@@ -113,3 +113,16 @@ def test_main_entrypoint():
     with patch("uvicorn.run") as mock_run:
         runpy.run_module("app.main", run_name="__main__", alter_sys=True)
         mock_run.assert_called_once_with(ANY, host="0.0.0.0", port=8000)
+
+
+def test_create_item():
+    """Test the create item endpoint."""
+    response = client.post(
+        "/api/items", params={"name": "New Item", "description": "A new item"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == 999
+    assert data["name"] == "New Item"
+    assert data["description"] == "A new item"
+    assert data["created"] is True
