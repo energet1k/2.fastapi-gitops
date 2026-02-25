@@ -25,9 +25,8 @@ repos:
     rev: 1.8.3
     hooks:
       - id: bandit
-        args: ["-c", "pyproject.toml"]
-        exclude: ^tests/
-        additional_dependencies: ["toml"]
+        args: ["-r", "app/"]
+        pass_filenames: false
 
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
