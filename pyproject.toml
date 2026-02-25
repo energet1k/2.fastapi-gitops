@@ -46,6 +46,10 @@ ignore = []
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 
+[tool.bandit]
+exclude_dirs = ["tests", "venv", "htmlcov"]
+skips = []
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
