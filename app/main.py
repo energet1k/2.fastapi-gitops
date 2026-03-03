@@ -1,7 +1,7 @@
 import os
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 
 app = FastAPI(
@@ -10,6 +10,12 @@ app = FastAPI(
     version="1.0.0",
     root_path=os.getenv("ROOT_PATH", "/GitOps-Starter"),
 )
+
+ITEMS: dict[int, dict] = {
+    1: {"id": 1, "name": "Item 1", "description": "First item"},
+    2: {"id": 2, "name": "Item 2", "description": "Second item"},
+    3: {"id": 3, "name": "Item 3", "description": "Third item"},
+}
 
 
 @app.get("/")
@@ -30,24 +36,22 @@ async def health_check():
 @app.get("/api/items")
 async def list_items():
     """Example endpoint to list items."""
-    return {
-        "items": [
-            {"id": 1, "name": "Item 1", "description": "First item"},
-            {"id": 2, "name": "Item 2", "description": "Second item"},
-            {"id": 3, "name": "Item 3", "description": "Third item"},
-        ]
-    }
+    return {"items": list(ITEMS.values())}
 
 
 @app.get("/api/items/{item_id}")
 async def get_item(item_id: int):
     """Example endpoint to get a specific item by ID."""
-    return {
-        "id": item_id,
-        "name": f"Item {item_id}",
-        "description": f"This is item number {item_id}",
-    }
+    if item_id not in ITEMS:
+        raise HTTPException(status_code=404, detail=f"Item {item_id} not found")
+    return ITEMS[item_id]
+
+
+@app.post("/api/items")
+async def create_item(name: str, description: str):
+    """Create a new item."""
+    return {"id": 999, "name": name, "description": description, "created": True}
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # nosec B104
